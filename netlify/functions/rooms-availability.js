@@ -1,26 +1,22 @@
-import { evokoRequest } from "../../src/services/evoko.js";
+import { evokoRequest } from "./services/evoko.js";
 
 export const handler = async (event) => {
   try {
-    const params = event.queryStringParameters;
-    const { date, start, end } = params;
+    const { date, start, end } = event.queryStringParameters || {};
 
-    const response = await evokoRequest(
-      "get",
-      `/api/v1/rooms/availability?date=${date}&start=${start}&end=${end}`
-    );
+    const response = await evokoRequest("get", "/api/v1/rooms/availability", { date, start, end });
 
     return {
       statusCode: 200,
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify(response),
     };
-
   } catch (err) {
-    console.error(err.response?.data || err);
-
+    console.error(err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Failed to fetch room availability" }),
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ error: "Failed to fetch rooms" }),
     };
   }
 };
